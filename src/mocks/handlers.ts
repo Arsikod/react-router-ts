@@ -1,18 +1,32 @@
 import { HttpResponse, delay, http } from "msw";
 
-const vans = [
-  { id: 1, make: "Ford", model: "Transit" },
+import { Van } from "../pages/vans";
+
+const vans: Van[] = [
+  { id: 1, make: "Ford", model: "Transit", type: "luxury" },
   {
     id: 2,
     make: "Mercedes",
     model: "Sprinter",
+    type: "luxury",
   },
-  { id: 3, make: "Volkswagen", model: "Crafter" },
-  { id: 4, make: "Renault", model: "Master" },
+  { id: 3, make: "Volkswagen", model: "Crafter", type: "luxury" },
+  { id: 4, make: "Renault", model: "Master", type: "econom" },
   {
     id: 5,
     make: "Peugeot",
     model: "Boxer",
+    type: "econom",
+  },
+  { id: 6, make: "Citroen", model: "Jumper", type: "econom" },
+  { id: 7, make: "Mercedes", model: "Vito", type: "econom" },
+  { id: 8, make: "Mercedes", model: "Viano", type: "econom" },
+  { id: 9, make: "Ford", model: "Transporter", type: "luxury" },
+  {
+    id: 10,
+    make: "Ford",
+    model: "Tourneo",
+    type: "econom",
   },
 ];
 

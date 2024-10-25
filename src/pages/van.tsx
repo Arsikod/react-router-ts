@@ -1,6 +1,5 @@
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-
-import { useParams } from "react-router-dom";
 
 export type Van = {
   id: number;
@@ -13,6 +12,8 @@ export function Van() {
 
   const [van, setVan] = useState<Van | null>(null);
 
+  const { state } = useLocation();
+
   useEffect(() => {
     fetch(`/api/vans/${vanId}`)
       .then((response) => response.json())
@@ -23,5 +24,10 @@ export function Van() {
     return <p>Loading...</p>;
   }
 
-  return <pre>{JSON.stringify(van, null, 2)}</pre>;
+  return (
+    <>
+      <Link to={`/vans?${state?.search ?? ""}`}>Back</Link>
+      <pre>{JSON.stringify(van, null, 2)}</pre>;
+    </>
+  );
 }
