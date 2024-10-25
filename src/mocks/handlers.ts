@@ -31,8 +31,23 @@ const vans: Van[] = [
 ];
 
 export const handlers = [
-  http.get("/api/vans", () => {
-    return HttpResponse.json(vans);
+  http.get("/api/vans", ({ request }) => {
+    // Construct a URL instance out of the intercepted request.
+    const url = new URL(request.url);
+
+    const type = url.searchParams.get("type");
+    const make = url.searchParams.get("make");
+
+    // Filter vans based on query parameters
+    let filteredVans = vans;
+    if (type) {
+      filteredVans = filteredVans.filter((van) => van.type === type);
+    }
+    if (make) {
+      filteredVans = filteredVans.filter((van) => van.make === make);
+    }
+
+    return HttpResponse.json(filteredVans);
   }),
 
   http.get("/api/vans/:vanId", (req) => {
