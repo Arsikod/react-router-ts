@@ -31,8 +31,34 @@ const vans: Van[] = [
 ];
 
 export const handlers = [
-  http.get("/api/vans", () => {
-    return HttpResponse.json(vans);
+  http.get("/api/vans", async ({ request }) => {
+    await delay(500);
+
+    // Construct a URL instance out of the intercepted request.
+    const url = new URL(request.url);
+
+    const type = url.searchParams.get("type");
+    const make = url.searchParams.get("make");
+
+    // Filter vans based on query parameters
+    let filteredVans = vans;
+    if (type) {
+      filteredVans = filteredVans.filter((van) => van.type === type);
+    }
+    if (make) {
+      filteredVans = filteredVans.filter((van) => van.make === make);
+    }
+
+    if (filteredVans.length === 0) {
+      return HttpResponse.json(
+        { message: "No vans found" },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    return HttpResponse.json(filteredVans);
   }),
 
   http.get("/api/vans/:vanId", (req) => {
@@ -48,7 +74,7 @@ export const handlers = [
   http.get("/api/host/vans", async () => {
     const threeVans = vans.slice(0, 3);
 
-    await delay();
+    await delay(500);
 
     return HttpResponse.json(threeVans);
   }),
@@ -59,7 +85,7 @@ export const handlers = [
     const van = vans.find((van) => van.id === +vanId);
 
     if (van) {
-      await delay();
+      await delay(500);
       return HttpResponse.json(van);
     }
 

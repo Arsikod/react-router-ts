@@ -12,7 +12,10 @@ export type Van = {
 
 export function Vans() {
   const [vans, setVans] = useState<Van[]>([]);
-  const [status, setStatus] = useState("idle");
+  const [fetchStatus, setFetchStatus] = useState({
+    status: "idle",
+    error: "",
+  });
 
   const typeFilter = [...new Set(vans.map((van) => van.type))];
   const makeFilter = [...new Set(vans.map((van) => van.make))];
@@ -43,17 +46,47 @@ export function Vans() {
   }
 
   useEffect(() => {
-    setStatus("loading");
-    fetch("/api/vans")
-      .then((response) => response.json())
-      .then((data) => {
-        setVans(data);
-      })
-      .finally(() => setStatus("idle"));
-  }, []);
+    const fetchVans = async () => {
+      setFetchStatus({ status: "loading", error: "" });
 
-  if (status === "loading") {
+      // Construct query string based on current search parameters
+      const queryString = searchParams.toString();
+      const url = queryString ? `/api/vans?${queryString}` : "/api/vans";
+
+      try {
+        const response = await fetch(url);
+
+        if (response.status === 404) {
+          throw new Error("No vans found");
+        }
+
+        const data = await response.json();
+
+        setVans(data);
+        setFetchStatus({ status: "success", error: "" });
+      } catch (error) {
+        console.error("Error fetching vans:", error);
+
+        if (error instanceof Error) {
+          setFetchStatus({ status: "error", error: error.message });
+        }
+      }
+    };
+
+    fetchVans();
+  }, [searchParams]);
+
+  if (fetchStatus.status === "loading") {
     return <p>Loading...</p>;
+  }
+
+  if (fetchStatus.status === "error") {
+    return (
+      <>
+        <p>Error: {fetchStatus.error}</p>
+        <Link to=".">Search again</Link>
+      </>
+    );
   }
 
   return (
