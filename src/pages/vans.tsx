@@ -1,5 +1,4 @@
-import { Link, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link, useLoaderData, useSearchParams } from "react-router-dom";
 
 import { Badge } from "../components/badge";
 
@@ -11,11 +10,7 @@ export type Van = {
 };
 
 export function Vans() {
-  const [vans, setVans] = useState<Van[]>([]);
-  const [fetchStatus, setFetchStatus] = useState({
-    status: "idle",
-    error: "",
-  });
+  const { vans, error } = useLoaderData() as { vans: Van[]; error: string };
 
   const typeFilter = [...new Set(vans.map((van) => van.type))];
   const makeFilter = [...new Set(vans.map((van) => van.make))];
@@ -37,45 +32,10 @@ export function Vans() {
     });
   }
 
-  useEffect(() => {
-    const fetchVans = async () => {
-      setFetchStatus({ status: "loading", error: "" });
-
-      // Construct query string based on current search parameters
-      const queryString = searchParams.toString();
-      const url = queryString ? `/api/vans?${queryString}` : "/api/vans";
-
-      try {
-        const response = await fetch(url);
-
-        if (response.status === 404) {
-          throw new Error("No vans found");
-        }
-
-        const data = await response.json();
-
-        setVans(data);
-        setFetchStatus({ status: "success", error: "" });
-      } catch (error) {
-        console.error("Error fetching vans:", error);
-
-        if (error instanceof Error) {
-          setFetchStatus({ status: "error", error: error.message });
-        }
-      }
-    };
-
-    fetchVans();
-  }, [searchParams]);
-
-  if (fetchStatus.status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  if (fetchStatus.status === "error") {
+  if (error) {
     return (
       <>
-        <p>Error: {fetchStatus.error}</p>
+        <p>Error: {error}</p>
         <Link to=".">Search again</Link>
       </>
     );
