@@ -22,14 +22,6 @@ export function Vans() {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const filteredVans = searchParams.size
-    ? vans.filter((van) => {
-        return Array.from(searchParams.entries()).every(([key, value]) => {
-          return van[key as keyof Van] === value;
-        });
-      })
-    : vans;
-
   function concatSearchParams(key: string, value: string) {
     setSearchParams((prev) => {
       const updatedParams = new URLSearchParams(prev);
@@ -92,40 +84,36 @@ export function Vans() {
   return (
     <div>
       <h1>Vans</h1>
-      {
-        <ul>
-          {typeFilter.map((type) => (
-            <li key={type}>
-              <Badge
-                paramKey="type"
-                param={type}
-                onButtonClick={concatSearchParams}
-              >
-                {type}
-              </Badge>
-            </li>
-          ))}
-
-          <br />
-
-          {makeFilter.map((make) => (
-            <li key={make}>
-              <Badge
-                paramKey="make"
-                param={make}
-                onButtonClick={concatSearchParams}
-              >
-                {make}
-              </Badge>
-            </li>
-          ))}
-        </ul>
-      }
+      <ul>
+        {typeFilter.map((type) => (
+          <li key={type}>
+            <Badge
+              paramKey="type"
+              param={type}
+              onButtonClick={concatSearchParams}
+            >
+              {type}
+            </Badge>
+          </li>
+        ))}
+        <br />
+        {makeFilter.map((make) => (
+          <li key={make}>
+            <Badge
+              paramKey="make"
+              param={make}
+              onButtonClick={concatSearchParams}
+            >
+              {make}
+            </Badge>
+          </li>
+        ))}
+      </ul>
 
       <Link to=".">Clean filter</Link>
 
       <ul style={{ display: "flex", flexDirection: "column" }}>
-        {filteredVans.map((van) => (
+        {vans.map((van) => (
           <Link
             to={`/vans/${van.id}`}
             key={van.id}
